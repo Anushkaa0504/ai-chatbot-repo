@@ -34,12 +34,12 @@ async function getIMDbData(query) {
     if (response.data.Response === "True") {
       const { Title, Year, Genre, Plot, imdbRating } = response.data;
       console.log("✅ IMDb Data:", response.data.Title);
-      return `🎬 *${Title}* (${Year})
+      return `🎬 ${Title} (${Year})
 Genre: ${Genre}
 IMDb Rating: ⭐ ${imdbRating}/10
 Plot: ${Plot}`;
     } else {
-      console.warn("⚠️ IMDb says no result for:", cleanQuery);
+      console.warn("⚠ IMDb says no result for:", cleanQuery);
       return `No IMDb data found for "${cleanQuery}".`;
     }
   } catch (error) {
@@ -58,7 +58,8 @@ app.post("/api/chat", async (req, res) => {
 
     console.log("🚀 Calling Gemini API...");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
 
     const prompt = `You are a friendly movie assistant. Tell me about ${message} — include story, reviews, and fun facts.`;
 
