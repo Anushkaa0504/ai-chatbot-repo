@@ -2,21 +2,19 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
+import path from "path";
+import { fileURLToPath } from "url";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 console.log("✅ Gemini Key loaded:", process.env.GEMINI_API_KEY ? "Yes" : "No");
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 app.use(express.json());
-
-app.use(
-  cors({
-    origin: "https://ai-chatbot-repo-pr81-p8x77vwk7-anushkaa0504s-projects.vercel.app/",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
 
 // 🎬 Fetch IMDb Data
 async function getIMDbData(query) {
@@ -58,8 +56,7 @@ app.post("/api/chat", async (req, res) => {
 
     console.log("🚀 Calling Gemini API...");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `You are a friendly movie assistant. Tell me about ${message} — include story, reviews, and fun facts.`;
 
@@ -72,6 +69,13 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     console.error("❌ Chat route error:", err.message);
     res.status(500).json({ reply: "Server error. Please try again later." });
   }
+});
+
+// ✅ Serve Frontend Build
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get("*", (_, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
