@@ -17,7 +17,7 @@ function App() {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://ai-chatbot-repo-1.onrender.com/api/chat", {
+      const res = await axios.post("https://ai-chatbot-repo-2.onrender.com/api/chat", {
         message: input,
       });
 
