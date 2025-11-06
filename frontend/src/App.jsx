@@ -7,7 +7,6 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 📨 Send message to backend
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -17,10 +16,8 @@ function App() {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://ai-chatbot-repo-2.onrender.com/api/chat", {
-        message: input,
-      });
-
+      // ✅ Relative URL now (no need for localhost or full URL)
+      const res = await axios.post("/api/chat", { message: input });
       const botMessage = { sender: "bot", text: res.data.reply };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -35,7 +32,6 @@ function App() {
   return (
     <div className="chat-container">
       <h1>🎬 AI Movie Chatbot</h1>
-
       <div className="chat-box">
         {messages.map((msg, i) => (
           <div key={i} className={`msg ${msg.sender}`}>
