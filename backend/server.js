@@ -2,21 +2,25 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { dirname } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 dotenv.config();
 console.log("✅ Gemini Key loaded:", process.env.GEMINI_API_KEY ? "Yes" : "No");
 
-
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// ✅ For Render combined deploy, CORS should allow same origin
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // 🎬 Fetch IMDb Data
 async function getIMDbData(query) {
@@ -73,17 +77,14 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Serve static frontend
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// ✅ Serve Frontend for Combined Render Deploy
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// ✅ Fix for Express v5 / Node 22 wildcard route
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.get(/.*/, (_, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
-import path from "path";
-import { fileURLToPath } from "url";
-
-
